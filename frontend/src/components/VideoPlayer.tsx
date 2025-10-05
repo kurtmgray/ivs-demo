@@ -4,12 +4,23 @@ import {
   StreamState,
   type PlayerError as AppPlayerError,
 } from '../types/stream';
+import type {
+  MediaPlayer,
+  Quality,
+  PlayerError as IVSPlayerError,
+  PlayerState as IVSPlayerState,
+  PlayerEventType as IVSPlayerEventType,
+} from 'amazon-ivs-player';
 import './VideoPlayer.scss';
 
-// Declare global IVS Player from CDN
 declare global {
   interface Window {
-    IVSPlayer: any;
+    IVSPlayer: {
+      create(): MediaPlayer;
+      isPlayerSupported: boolean;
+      PlayerState: typeof IVSPlayerState;
+      PlayerEventType: typeof IVSPlayerEventType;
+    };
   }
 }
 
@@ -23,7 +34,7 @@ export function VideoPlayer({
   autoplay = true,
 }: VideoPlayerProps) {
   const videoEl = useRef<HTMLVideoElement>(null);
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<MediaPlayer | null>(null);
 
   const [playerState, setPlayerState] = useState<AppPlayerState>(
     AppPlayerState.IDLE
@@ -33,8 +44,8 @@ export function VideoPlayer({
   );
   const [muted, setMuted] = useState<boolean>(true);
   const [playerError, setPlayerError] = useState<AppPlayerError | null>(null);
-  const [qualities, setQualities] = useState<any[]>([]);
-  const [selectedQuality, setSelectedQuality] = useState<any>(null);
+  const [qualities, setQualities] = useState<Quality[]>([]);
+  const [selectedQuality, setSelectedQuality] = useState<Quality | null>(null);
 
   useEffect(() => {
     if (!videoEl.current || !window.IVSPlayer) {
@@ -61,49 +72,49 @@ export function VideoPlayer({
 
     // Event listeners
     player.addEventListener(PlayerState.IDLE, () => {
-      console.log('Player: IDLE');
+      console.log('IDLE');
       setPlayerState(AppPlayerState.IDLE);
     });
 
     player.addEventListener(PlayerState.READY, () => {
-      console.log('Player: READY');
+      console.log('READY');
       setPlayerState(AppPlayerState.READY);
       setStreamState(StreamState.LIVE);
       const availableQualities = player.getQualities();
-      console.log('Available qualities:', availableQualities);
+      console.log('Stream qualities:', availableQualities);
       setQualities(availableQualities);
       setSelectedQuality(player.getQuality());
     });
 
     player.addEventListener(PlayerState.PLAYING, () => {
-      console.log('Player: PLAYING');
+      console.log('PLAYING');
       setPlayerState(AppPlayerState.PLAYING);
       setStreamState(StreamState.LIVE);
     });
 
     player.addEventListener(PlayerState.BUFFERING, () => {
-      console.log('Player: BUFFERING');
+      console.log('BUFFERING');
       setPlayerState(AppPlayerState.BUFFERING);
     });
 
     player.addEventListener(PlayerState.ENDED, () => {
-      console.log('Player: ENDED');
+      console.log('ENDED');
       setPlayerState(AppPlayerState.ENDED);
       setStreamState(StreamState.OFFLINE);
     });
 
-    player.addEventListener(PlayerEventType.ERROR, (err: any) => {
-      console.error('Player error:', err);
+    player.addEventListener(PlayerEventType.ERROR, (err: IVSPlayerError) => {
+      console.error('error:', err);
       setPlayerError({
         type: err.type,
         message: err.message,
-        code: err.code,
+        code: String(err.code),
       });
       setStreamState(StreamState.OFFLINE);
     });
 
-    player.addEventListener(PlayerEventType.QUALITY_CHANGED, (quality: any) => {
-      console.log('Quality changed:', quality);
+    player.addEventListener(PlayerEventType.QUALITY_CHANGED, (quality: Quality) => {
+      console.log('Quality change:', quality);
       setSelectedQuality(quality);
     });
 
@@ -121,7 +132,7 @@ export function VideoPlayer({
     };
   }, [playbackUrl, autoplay, muted]);
 
-  const handleQualityChange = (quality: any) => {
+  const handleQualityChange = (quality: Quality) => {
     if (playerRef.current) {
       playerRef.current.setQuality(quality);
     }
@@ -177,7 +188,7 @@ export function VideoPlayer({
             onClick={() => {
               if (playerRef.current) {
                 playerRef.current.setMuted(!playerRef.current.isMuted());
-                setMuted(prev => !prev);
+                setMuted((prev) => !prev);
               }
             }}
           >
