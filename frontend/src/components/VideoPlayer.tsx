@@ -184,11 +184,12 @@ export function VideoPlayer({
             onClick={() => {
               playerRef.current?.load(playbackUrl);
               playerRef.current?.play();
+              setPlayerError(null);
             }}
           >
             Refresh
           </button>
-          
+
           <button
             onClick={() => {
               if (playerRef.current) {
