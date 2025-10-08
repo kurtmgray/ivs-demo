@@ -105,6 +105,13 @@ export function VideoPlayer({
 
     player.addEventListener(PlayerEventType.ERROR, (err: IVSPlayerError) => {
       console.error('error:', err);
+
+      // ignore "failed to load playlist" errors - these are expected when stream is offline
+      if (err.message?.toLowerCase().includes('failed to load playlist')) {
+        setStreamState(StreamState.OFFLINE);
+        return;
+      }
+
       setPlayerError({
         type: err.type,
         message: err.message,
