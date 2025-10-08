@@ -1,1 +1,1 @@
-web: ivs-demo
+web: ivs-demo-backend
