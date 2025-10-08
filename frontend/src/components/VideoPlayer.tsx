@@ -185,7 +185,6 @@ export function VideoPlayer({
           </div>
         )}
         <div className="player-controls">
-
           <button
             className="player-button"
             onClick={() => {
@@ -196,31 +195,34 @@ export function VideoPlayer({
           >
             Refresh
           </button>
+          {streamState === StreamState.LIVE && (
+            <>
+              <button
+                onClick={() => {
+                  if (playerRef.current) {
+                    if (playerState === AppPlayerState.PLAYING) {
+                      playerRef.current.pause();
+                    } else {
+                      playerRef.current.play();
+                    }
+                  }
+                }}
+              >
+                {playerState === AppPlayerState.PLAYING ? 'Pause' : 'Play'}
+              </button>
 
-          <button
-            onClick={() => {
-              if (playerRef.current) {
-                if (playerState === AppPlayerState.PLAYING) {
-                  playerRef.current.pause();
-                } else {
-                  playerRef.current.play();
-                }
-              }
-            }}
-          >
-            {playerState === AppPlayerState.PLAYING ? 'Pause' : 'Play'}
-          </button>
-
-          <button
-            onClick={() => {
-              if (playerRef.current) {
-                playerRef.current.setMuted(!playerRef.current.isMuted());
-                setMuted((prev) => !prev);
-              }
-            }}
-          >
-            {muted ? 'Unmute' : 'Mute'}
-          </button>
+              <button
+                onClick={() => {
+                  if (playerRef.current) {
+                    playerRef.current.setMuted(!playerRef.current.isMuted());
+                    setMuted((prev) => !prev);
+                  }
+                }}
+              >
+                {muted ? 'Unmute' : 'Mute'}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
