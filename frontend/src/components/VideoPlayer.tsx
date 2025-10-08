@@ -201,7 +201,7 @@ export function VideoPlayer({
               }
             }}
           >
-            {playerState === AppPlayerState.PLAYING ? '⏸ Pause' : '▶ Play'}
+            {playerState === AppPlayerState.PLAYING ? 'Pause' : 'Play'}
           </button>
 
           <button
