@@ -26,16 +26,6 @@ function RouteComponent(){
             <p>(not implemented)</p>
           </div>
         </div>
-
-        <div className="getting-started">
-          <h3>Getting Started</h3>
-          <ol>
-            <li>Configure OBS with your stream key</li>
-            <li>Start streaming to the ingest endpoint</li>
-            <li>Navigate to the Watch page to see your stream</li>
-            <li>Check the Dashboard for stream metrics</li>
-          </ol>
-        </div>
       </div>
     )
   }

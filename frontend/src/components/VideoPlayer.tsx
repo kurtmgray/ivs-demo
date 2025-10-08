@@ -113,10 +113,13 @@ export function VideoPlayer({
       setStreamState(StreamState.OFFLINE);
     });
 
-    player.addEventListener(PlayerEventType.QUALITY_CHANGED, (quality: Quality) => {
-      console.log('Quality change:', quality);
-      setSelectedQuality(quality);
-    });
+    player.addEventListener(
+      PlayerEventType.QUALITY_CHANGED,
+      (quality: Quality) => {
+        console.log('Quality change:', quality);
+        setSelectedQuality(quality);
+      }
+    );
 
     player.setMuted(muted);
     player.load(playbackUrl);
@@ -130,7 +133,8 @@ export function VideoPlayer({
         playerRef.current.delete();
       }
     };
-  }, [playbackUrl, autoplay, muted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playbackUrl, autoplay]);
 
   const handleQualityChange = (quality: Quality) => {
     if (playerRef.current) {
@@ -154,22 +158,37 @@ export function VideoPlayer({
           {streamState === StreamState.UNKNOWN && 'LOADING...'}
         </div>
 
-        <div className="quality-selector">
-          <select
-            value={selectedQuality?.name || ''}
-            onChange={(e) => {
-              const quality = qualities.find((q) => q.name === e.target.value);
-              if (quality) handleQualityChange(quality);
+        {qualities?.length > 0 && (
+          <div className="quality-selector">
+            <select
+              value={selectedQuality?.name || ''}
+              onChange={(e) => {
+                const quality = qualities.find(
+                  (q) => q.name === e.target.value
+                );
+                if (quality) handleQualityChange(quality);
+              }}
+            >
+              {qualities.map((quality) => (
+                <option key={quality.name} value={quality.name}>
+                  {quality.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        <div className="player-controls">
+
+          <button
+            className="player-button"
+            onClick={() => {
+              playerRef.current?.load(playbackUrl);
+              playerRef.current?.play();
             }}
           >
-            {qualities.map((quality) => (
-              <option key={quality.name} value={quality.name}>
-                {quality.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="player-controls">
+            Refresh
+          </button>
+          
           <button
             onClick={() => {
               if (playerRef.current) {
