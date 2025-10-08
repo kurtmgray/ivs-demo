@@ -1,21 +1,16 @@
+// NOTE: Hardcoded for demo
+// In production, these should be fetched from a backend endpoint
+
 interface EnvConfig {
   playbackUrl: string;
   channelArn: string;
   awsRegion: string;
 }
 
-function getEnvVar(key: string): string {
-  const value = import.meta.env[key];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${key}`);
-  }
-  return value;
-}
-
 export const env: EnvConfig = {
-  playbackUrl: getEnvVar('VITE_PLAYBACK_URL'),
-  channelArn: getEnvVar('VITE_CHANNEL_ARN'),
-  awsRegion: getEnvVar('VITE_AWS_REGION'),
+  playbackUrl: 'https://4f96398f983b.us-west-2.playback.live-video.net/api/video/v1/us-west-2.919488177132.channel.YFCwsgoCGJ4S.m3u8',
+  channelArn: 'arn:aws:ivs:us-west-2:919488177132:channel/YFCwsgoCGJ4S',
+  awsRegion: 'us-west-2',
 };
 
 if (import.meta.env.DEV) {
